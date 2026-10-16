@@ -1,88 +1,22 @@
-import { Lock, Users } from "lucide-react";
-import { topics } from "@/lib/sample-data";
+import { Suspense } from "react";
+import { createPost } from "@/app/actions";
+import { PostForm } from "@/components/PostForm";
+import { getTopics } from "@/lib/data";
+import { requireUser } from "@/lib/session";
 
-const visibilityOptions = [
-  { value: "PRIVATE", label: "나만 보기", Icon: Lock },
-  { value: "PUBLIC", label: "함께 나누기", Icon: Users },
-] as const;
-
-export default function WritePage() {
+export default function WritePage({ searchParams }: PageProps<"/write">) {
   return (
-    <form className="mx-auto max-w-[65ch]">
-      <label htmlFor="title" className="sr-only">
-        제목
-      </label>
-      <input
-        id="title"
-        name="title"
-        placeholder="제목"
-        className="w-full bg-transparent font-serif text-3xl font-bold text-ink outline-none placeholder:text-muted/60 focus-visible:outline-none"
-      />
-      <label htmlFor="content" className="sr-only">
-        내용
-      </label>
-      <textarea
-        id="content"
-        name="content"
-        rows={14}
-        placeholder="오늘의 소소한 이야기를 들려주세요."
-        className="mt-6 w-full resize-none border-t border-line bg-transparent pt-6 font-serif text-lg leading-loose text-body outline-none placeholder:text-muted/60 focus-visible:outline-none"
-      />
-
-      <div className="mt-8 space-y-6 border-t border-line pt-6">
-        <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-          <label htmlFor="topicId" className="text-sm text-muted">
-            주제
-          </label>
-          <select
-            id="topicId"
-            name="topicId"
-            defaultValue=""
-            className="rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink"
-          >
-            <option value="">주제 없음</option>
-            {topics.map((t) => (
-              <option key={t.slug} value={t.slug}>
-                {t.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <fieldset className="flex flex-wrap items-center gap-x-6 gap-y-3">
-          <legend className="sr-only">공개 범위</legend>
-          <span aria-hidden className="text-sm text-muted">
-            공개
-          </span>
-          <div className="inline-flex rounded-lg border border-line p-1">
-            {visibilityOptions.map(({ value, label, Icon }) => (
-              <label
-                key={value}
-                className="inline-flex cursor-pointer items-center gap-1.5 rounded-md px-3 py-1.5 text-sm text-muted transition-colors has-[:checked]:bg-ink has-[:checked]:text-paper has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-accent"
-              >
-                <input
-                  type="radio"
-                  name="visibility"
-                  value={value}
-                  defaultChecked={value === "PRIVATE"}
-                  className="sr-only"
-                />
-                <Icon size={14} strokeWidth={1.75} aria-hidden />
-                {label}
-              </label>
-            ))}
-          </div>
-        </fieldset>
-
-        <div className="flex justify-end">
-          <button
-            type="submit"
-            className="rounded-lg bg-accent px-6 py-3 font-medium text-accent-ink transition-opacity hover:opacity-90"
-          >
-            저장하기
-          </button>
-        </div>
-      </div>
-    </form>
+    <Suspense fallback={<div className="mx-auto h-96 max-w-[65ch]" aria-busy="true" />}>
+      <WriteForm searchParams={searchParams} />
+    </Suspense>
   );
+}
+
+async function WriteForm({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+  const { topic } = await searchParams;
+  await requireUser(topic ? `/write?topic=${topic}` : "/write");
+  const topics = await getTopics();
+  const preset = topics.find((t) => t.slug === topic);
+
+  return <PostForm action={createPost} topics={topics} defaults={{ topicId: preset?.id }} />;
 }

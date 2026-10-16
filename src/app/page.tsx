@@ -1,12 +1,10 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { ArrowRight, PenLine } from "lucide-react";
-import { PostList } from "@/components/PostList";
-import { posts, topics } from "@/lib/sample-data";
+import { EmptyState, PostList, PostListSkeleton } from "@/components/PostList";
+import { getFeaturedTopic, getRecentPublicPosts, getTopics } from "@/lib/data";
 
 export default function Home() {
-  const shared = posts.filter((p) => p.visibility === "PUBLIC");
-  const [featured, ...otherTopics] = topics;
-
   return (
     <div className="space-y-24">
       <section>
@@ -37,35 +35,57 @@ export default function Home() {
         <h2 id="topics-heading" className="text-sm font-medium text-muted">
           이번 주의 주제
         </h2>
-        <Link href={`/topics/${featured.slug}`} className="group mt-4 block">
-          <p className="font-serif text-3xl font-bold text-ink transition-colors group-hover:text-accent">
-            {featured.name}
-          </p>
-          <p className="mt-2 text-body">{featured.description}</p>
-        </Link>
-        <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 border-t border-line pt-6">
-          {otherTopics.map((t) => (
-            <li key={t.slug}>
-              <Link href={`/topics/${t.slug}`} className="font-serif text-lg text-body transition-colors hover:text-accent">
-                {t.name}
-              </Link>
-            </li>
-          ))}
-          <li className="ml-auto">
-            <Link href="/topics" className="inline-flex items-center gap-1 text-sm text-muted transition-colors hover:text-ink">
-              모든 주제
-              <ArrowRight size={14} strokeWidth={1.75} aria-hidden />
-            </Link>
-          </li>
-        </ul>
+        <Suspense fallback={<div className="mt-4 h-28" />}>
+          <TopicsOverview />
+        </Suspense>
       </section>
 
       <section aria-labelledby="recent-heading">
         <h2 id="recent-heading" className="mb-2 font-serif text-2xl font-bold text-ink">
           최근 나눠진 이야기
         </h2>
-        <PostList posts={shared} />
+        <Suspense fallback={<PostListSkeleton />}>
+          <RecentPosts />
+        </Suspense>
       </section>
     </div>
   );
+}
+
+async function TopicsOverview() {
+  const [featured, topics] = await Promise.all([getFeaturedTopic(), getTopics()]);
+  if (!featured) return <p className="mt-4 text-muted">아직 주제가 없어요.</p>;
+  const others = topics.filter((t) => t.id !== featured.id);
+
+  return (
+    <>
+      <Link href={`/topics/${featured.slug}`} className="group mt-4 block">
+        <p className="font-serif text-3xl font-bold text-ink transition-colors group-hover:text-accent">
+          {featured.name}
+        </p>
+        {featured.description && <p className="mt-2 text-body">{featured.description}</p>}
+      </Link>
+      <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 border-t border-line pt-6">
+        {others.map((t) => (
+          <li key={t.id}>
+            <Link href={`/topics/${t.slug}`} className="font-serif text-lg text-body transition-colors hover:text-accent">
+              {t.name}
+            </Link>
+          </li>
+        ))}
+        <li className="ml-auto">
+          <Link href="/topics" className="inline-flex items-center gap-1 text-sm text-muted transition-colors hover:text-ink">
+            모든 주제
+            <ArrowRight size={14} strokeWidth={1.75} aria-hidden />
+          </Link>
+        </li>
+      </ul>
+    </>
+  );
+}
+
+async function RecentPosts() {
+  const posts = await getRecentPublicPosts();
+  if (posts.length === 0) return <EmptyState>아직 나눠진 이야기가 없어요. 첫 이야기를 남겨주세요.</EmptyState>;
+  return <PostList posts={posts} />;
 }

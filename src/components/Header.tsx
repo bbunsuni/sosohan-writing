@@ -1,10 +1,10 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { PenLine } from "lucide-react";
+import { signOutAction } from "@/app/actions";
+import { getCurrentUser } from "@/lib/session";
 
-const nav = [
-  { href: "/topics", label: "주제" },
-  { href: "/me", label: "내 글 서랍" },
-];
+const linkClass = "text-muted transition-colors hover:text-ink";
 
 export function Header() {
   return (
@@ -14,11 +14,12 @@ export function Header() {
           함께의 소소한 글쓰기
         </Link>
         <nav className="flex items-center gap-4 text-sm sm:gap-6">
-          {nav.map((item) => (
-            <Link key={item.href} href={item.href} className="text-muted transition-colors hover:text-ink">
-              {item.label}
-            </Link>
-          ))}
+          <Link href="/topics" className={linkClass}>
+            주제
+          </Link>
+          <Suspense fallback={<span className="w-12" aria-hidden />}>
+            <UserNav />
+          </Suspense>
           <Link
             href="/write"
             aria-label="글쓰기"
@@ -30,5 +31,28 @@ export function Header() {
         </nav>
       </div>
     </header>
+  );
+}
+
+async function UserNav() {
+  const user = await getCurrentUser();
+  if (!user) {
+    return (
+      <Link href="/login" className={linkClass}>
+        로그인
+      </Link>
+    );
+  }
+  return (
+    <>
+      <Link href="/me" className={linkClass}>
+        내 글 서랍
+      </Link>
+      <form action={signOutAction} className="hidden sm:block">
+        <button type="submit" className={linkClass}>
+          로그아웃
+        </button>
+      </form>
+    </>
   );
 }
