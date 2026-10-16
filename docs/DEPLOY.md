@@ -16,19 +16,16 @@
 | 이름 | 값 |
 | --- | --- |
 | `AUTH_SECRET` | `npx auth secret` 또는 `openssl rand -base64 32` 로 만든 값 |
-| `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET` | Google Cloud Console → OAuth 클라이언트 |
-| `AUTH_KAKAO_ID`, `AUTH_KAKAO_SECRET` | Kakao Developers → 내 애플리케이션 (REST API 키 / Client Secret) |
 
-- `AUTH_DEV_LOGIN`은 **넣지 않습니다.** 닉네임만으로 누구나 다른 사람으로 로그인할 수 있게 됩니다.
-- Google과 카카오 중 최소 하나는 있어야 로그인할 수 있습니다.
+로그인은 닉네임+비밀번호로 동작하므로 **필수 환경 변수는 `AUTH_SECRET` 하나**입니다.
 
-### OAuth 리디렉션 URI
+### (선택) Google / 카카오 로그인
 
-배포 주소가 `https://sosohan-writing.vercel.app`이라면:
+`AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET`, `AUTH_KAKAO_ID`, `AUTH_KAKAO_SECRET`을 추가하면 로그인 버튼이 생깁니다.
+배포 주소가 `https://sosohan-writing.vercel.app`이라면 리디렉션 URI는 다음과 같습니다.
 
 - Google: `https://sosohan-writing.vercel.app/api/auth/callback/google`
 - 카카오: `https://sosohan-writing.vercel.app/api/auth/callback/kakao`
-  (카카오 로그인 활성화, 동의항목에서 닉네임·프로필 사진 설정)
 
 ## 4. 이후 배포
 

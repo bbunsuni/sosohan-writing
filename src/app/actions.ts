@@ -6,7 +6,8 @@ import { AuthError } from "next-auth";
 import { signIn, signOut } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/session";
-import { commentSchema, nicknameSchema, postSchema } from "@/lib/validations";
+import { hashPassword } from "@/lib/password";
+import { commentSchema, credentialsSchema, postSchema } from "@/lib/validations";
 
 export type FormState = { error?: string; ok?: boolean };
 
@@ -95,13 +96,35 @@ function safeCallbackUrl(value: FormDataEntryValue | null) {
   return url.startsWith("/") && !url.startsWith("//") ? url : "/";
 }
 
-export async function devSignIn(_prev: FormState, formData: FormData): Promise<FormState> {
-  const name = nicknameSchema.safeParse(formData.get("name"));
-  if (!name.success) return { error: "닉네임은 1–20자로 입력해 주세요." };
+async function passwordSignIn(loginName: string, password: string, callbackUrl: FormDataEntryValue | null) {
+  // 성공하면 signIn이 redirect를 던진다
+  await signIn("password", { loginName, password, redirectTo: safeCallbackUrl(callbackUrl) });
+}
+
+export async function logIn(_prev: FormState, formData: FormData): Promise<FormState> {
+  const parsed = credentialsSchema.safeParse({ loginName: formData.get("loginName"), password: formData.get("password") });
+  if (!parsed.success) return { error: "닉네임 또는 비밀번호가 맞지 않아요." };
   try {
-    await signIn("dev-login", { name: name.data, redirectTo: safeCallbackUrl(formData.get("callbackUrl")) });
+    await passwordSignIn(parsed.data.loginName, parsed.data.password, formData.get("callbackUrl"));
   } catch (error) {
-    if (error instanceof AuthError) return { error: "로그인하지 못했어요. 다시 시도해 주세요." };
+    if (error instanceof AuthError) return { error: "닉네임 또는 비밀번호가 맞지 않아요." };
+    throw error;
+  }
+  return {};
+}
+
+export async function signUp(_prev: FormState, formData: FormData): Promise<FormState> {
+  const parsed = credentialsSchema.safeParse({ loginName: formData.get("loginName"), password: formData.get("password") });
+  if (!parsed.success) return { error: parsed.error.issues[0].message };
+  const { loginName, password } = parsed.data;
+
+  if (await prisma.user.findUnique({ where: { loginName } })) return { error: "이미 쓰고 있는 닉네임이에요." };
+  await prisma.user.create({ data: { loginName, name: loginName, passwordHash: await hashPassword(password) } });
+
+  try {
+    await passwordSignIn(loginName, password, formData.get("callbackUrl"));
+  } catch (error) {
+    if (error instanceof AuthError) return { error: "가입은 됐지만 로그인하지 못했어요. 다시 로그인해 주세요." };
     throw error;
   }
   return {};

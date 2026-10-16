@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { oauthSignIn } from "@/app/actions";
-import { devLoginEnabled, oauthProviders } from "@/auth";
-import { DevLoginForm } from "./DevLoginForm";
+import { oauthProviders } from "@/auth";
+import { PasswordForms } from "./PasswordForms";
 
 export default function LoginPage({ searchParams }: PageProps<"/login">) {
   return (
@@ -21,8 +21,10 @@ async function LoginOptions({ searchParams }: { searchParams: Promise<Record<str
 
   return (
     <div className="mt-10 space-y-8">
+      <PasswordForms callbackUrl={returnTo} />
+
       {oauthProviders.length > 0 && (
-        <div className="space-y-3">
+        <div className="space-y-3 border-t border-line pt-8">
           {oauthProviders.map((p) => (
             <form key={p.id} action={oauthSignIn.bind(null, p.id)}>
               <input type="hidden" name="callbackUrl" value={returnTo} />
@@ -35,14 +37,6 @@ async function LoginOptions({ searchParams }: { searchParams: Promise<Record<str
             </form>
           ))}
         </div>
-      )}
-
-      {devLoginEnabled && <DevLoginForm callbackUrl={returnTo} />}
-
-      {oauthProviders.length === 0 && !devLoginEnabled && (
-        <p className="border-y border-line py-8 text-sm text-muted">
-          사용할 수 있는 로그인 방법이 없어요. <code>.env</code>에 Google 또는 카카오 OAuth 키를 설정해 주세요.
-        </p>
       )}
     </div>
   );
