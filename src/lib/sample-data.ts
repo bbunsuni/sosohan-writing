@@ -68,3 +68,9 @@ export const posts: SamplePost[] = [
 ];
 
 export const findTopic = (slug: string) => topics.find((t) => t.slug === slug);
+
+/** "2026-10-15" → "10월 15일" */
+export function formatDate(iso: string) {
+  const [, month, day] = iso.split("-").map(Number);
+  return `${month}월 ${day}일`;
+}

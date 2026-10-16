@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PenLine } from "lucide-react";
 
 const nav = [
   { href: "/topics", label: "주제" },
@@ -7,22 +8,24 @@ const nav = [
 
 export function Header() {
   return (
-    <header className="border-b border-line bg-paper/80 backdrop-blur sticky top-0 z-10">
-      <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-4">
-        <Link href="/" className="font-serif text-lg font-bold text-ink">
+    <header className="border-b border-line">
+      <div className="mx-auto flex max-w-3xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
+        <Link href="/" className="font-serif text-base font-bold text-ink sm:text-lg">
           함께의 소소한 글쓰기
         </Link>
-        <nav className="flex items-center gap-4 text-sm text-muted">
+        <nav className="flex items-center gap-4 text-sm sm:gap-6">
           {nav.map((item) => (
-            <Link key={item.href} href={item.href} className="hover:text-ink">
+            <Link key={item.href} href={item.href} className="text-muted transition-colors hover:text-ink">
               {item.label}
             </Link>
           ))}
           <Link
             href="/write"
-            className="rounded-full bg-accent px-4 py-1.5 font-medium text-white hover:opacity-90"
+            aria-label="글쓰기"
+            className="inline-flex items-center gap-1.5 font-medium text-accent transition-opacity hover:opacity-80"
           >
-            글쓰기
+            <PenLine size={16} strokeWidth={1.75} aria-hidden />
+            <span className="hidden sm:inline">글쓰기</span>
           </Link>
         </nav>
       </div>

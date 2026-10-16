@@ -43,6 +43,7 @@
 │   │   └── sample-data.ts   # DB 연동 전 화면용 샘플 데이터 (임시)
 │   ├── generated/prisma/    # prisma generate 결과물 (git 제외)
 │   └── auth.ts              # Auth.js 설정
+├── docs/DESIGN.md           # 디자인 방향·토큰 (화면 작업 전 확인)
 ├── docker-compose.yml       # 로컬 PostgreSQL
 └── .env.example
 ```

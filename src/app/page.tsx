@@ -1,48 +1,70 @@
 import Link from "next/link";
-import { PostCard } from "@/components/PostCard";
+import { ArrowRight, PenLine } from "lucide-react";
+import { PostList } from "@/components/PostList";
 import { posts, topics } from "@/lib/sample-data";
 
 export default function Home() {
   const shared = posts.filter((p) => p.visibility === "PUBLIC");
+  const [featured, ...otherTopics] = topics;
+
   return (
-    <div className="space-y-12">
-      <section className="py-6 text-center">
-        <h1 className="font-serif text-3xl font-bold leading-snug text-ink sm:text-4xl">
+    <div className="space-y-24">
+      <section>
+        <p className="text-sm text-muted">오늘의 글쓰기</p>
+        <h1 className="mt-4 font-serif text-4xl font-bold leading-tight text-ink sm:text-5xl">
           오늘의 소소한 이야기를
           <br />
           적어볼까요?
         </h1>
-        <p className="mt-4 text-muted">혼자 간직해도, 같은 주제로 함께 나눠도 좋아요.</p>
-        <Link
-          href="/write"
-          className="mt-6 inline-block rounded-full bg-accent px-6 py-2.5 font-medium text-white hover:opacity-90"
-        >
-          글 쓰러 가기
+        <p className="mt-6 max-w-[48ch] text-lg leading-relaxed text-body">
+          혼자 간직해도 좋고, 같은 주제로 쓴 사람들과 나눠도 좋아요.
+        </p>
+        <div className="mt-8 flex flex-wrap items-center gap-6">
+          <Link
+            href="/write"
+            className="inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-3 font-medium text-accent-ink transition-opacity hover:opacity-90"
+          >
+            <PenLine size={18} strokeWidth={1.75} aria-hidden />
+            글 쓰러 가기
+          </Link>
+          <Link href="/topics" className="text-sm text-muted underline-offset-4 transition-colors hover:text-ink hover:underline">
+            다른 사람들의 이야기 읽기
+          </Link>
+        </div>
+      </section>
+
+      <section aria-labelledby="topics-heading">
+        <h2 id="topics-heading" className="text-sm font-medium text-muted">
+          이번 주의 주제
+        </h2>
+        <Link href={`/topics/${featured.slug}`} className="group mt-4 block">
+          <p className="font-serif text-3xl font-bold text-ink transition-colors group-hover:text-accent">
+            {featured.name}
+          </p>
+          <p className="mt-2 text-body">{featured.description}</p>
         </Link>
-      </section>
-
-      <section>
-        <h2 className="mb-4 font-serif text-xl font-bold text-ink">이번 주 함께 나누는 주제</h2>
-        <div className="flex flex-wrap gap-2">
-          {topics.map((t) => (
-            <Link
-              key={t.slug}
-              href={`/topics/${t.slug}`}
-              className="rounded-full border border-line bg-card px-4 py-2 text-sm hover:border-accent"
-            >
-              # {t.name} <span className="text-muted">{t.postCount}</span>
+        <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 border-t border-line pt-6">
+          {otherTopics.map((t) => (
+            <li key={t.slug}>
+              <Link href={`/topics/${t.slug}`} className="font-serif text-lg text-body transition-colors hover:text-accent">
+                {t.name}
+              </Link>
+            </li>
+          ))}
+          <li className="ml-auto">
+            <Link href="/topics" className="inline-flex items-center gap-1 text-sm text-muted transition-colors hover:text-ink">
+              모든 주제
+              <ArrowRight size={14} strokeWidth={1.75} aria-hidden />
             </Link>
-          ))}
-        </div>
+          </li>
+        </ul>
       </section>
 
-      <section>
-        <h2 className="mb-4 font-serif text-xl font-bold text-ink">최근 나눠진 이야기</h2>
-        <div className="space-y-4">
-          {shared.map((p) => (
-            <PostCard key={p.id} post={p} />
-          ))}
-        </div>
+      <section aria-labelledby="recent-heading">
+        <h2 id="recent-heading" className="mb-2 font-serif text-2xl font-bold text-ink">
+          최근 나눠진 이야기
+        </h2>
+        <PostList posts={shared} />
       </section>
     </div>
   );

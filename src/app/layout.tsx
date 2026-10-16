@@ -11,6 +11,7 @@ const gowunBatang = Gowun_Batang({
 
 const notoSansKr = Noto_Sans_KR({
   variable: "--font-noto-sans-kr",
+  weight: ["400", "500", "700"],
   subsets: ["latin"],
 });
 
@@ -24,8 +25,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="ko" className={`${gowunBatang.variable} ${notoSansKr.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col font-sans">
         <Header />
-        <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-10">{children}</main>
-        <footer className="py-8 text-center text-xs text-muted">© 함께의 소소한 글쓰기</footer>
+        <main className="mx-auto w-full max-w-3xl flex-1 px-4 pt-12 pb-24 sm:px-6 sm:pt-16">{children}</main>
+        <footer className="border-t border-line">
+          <p className="mx-auto max-w-3xl px-4 py-8 text-xs text-muted sm:px-6">함께의 소소한 글쓰기</p>
+        </footer>
       </body>
     </html>
   );

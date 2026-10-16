@@ -1,47 +1,87 @@
+import { Lock, Users } from "lucide-react";
 import { topics } from "@/lib/sample-data";
+
+const visibilityOptions = [
+  { value: "PRIVATE", label: "나만 보기", Icon: Lock },
+  { value: "PUBLIC", label: "함께 나누기", Icon: Users },
+] as const;
 
 export default function WritePage() {
   return (
-    <form className="space-y-5">
-      <h1 className="font-serif text-2xl font-bold text-ink">글쓰기</h1>
+    <form className="mx-auto max-w-[65ch]">
+      <label htmlFor="title" className="sr-only">
+        제목
+      </label>
       <input
+        id="title"
         name="title"
         placeholder="제목"
-        className="w-full rounded-xl border border-line bg-card px-4 py-3 font-serif text-lg text-ink outline-none focus:border-accent"
+        className="w-full bg-transparent font-serif text-3xl font-bold text-ink outline-none placeholder:text-muted/60 focus-visible:outline-none"
       />
+      <label htmlFor="content" className="sr-only">
+        내용
+      </label>
       <textarea
+        id="content"
         name="content"
-        rows={12}
+        rows={14}
         placeholder="오늘의 소소한 이야기를 들려주세요."
-        className="w-full resize-none rounded-xl border border-line bg-card px-4 py-3 font-serif leading-loose text-ink outline-none focus:border-accent"
+        className="mt-6 w-full resize-none border-t border-line bg-transparent pt-6 font-serif text-lg leading-loose text-body outline-none placeholder:text-muted/60 focus-visible:outline-none"
       />
-      <div className="flex flex-wrap items-center gap-3">
-        <select
-          name="topicId"
-          className="rounded-xl border border-line bg-card px-3 py-2 text-sm text-ink"
-          defaultValue=""
-        >
-          <option value="">주제 없음</option>
-          {topics.map((t) => (
-            <option key={t.slug} value={t.slug}>
-              # {t.name}
-            </option>
-          ))}
-        </select>
-        <select
-          name="visibility"
-          className="rounded-xl border border-line bg-card px-3 py-2 text-sm text-ink"
-          defaultValue="PRIVATE"
-        >
-          <option value="PRIVATE">🔒 나만 보기</option>
-          <option value="PUBLIC">🌿 함께 나누기</option>
-        </select>
-        <button
-          type="submit"
-          className="ml-auto rounded-full bg-accent px-6 py-2 font-medium text-white hover:opacity-90"
-        >
-          저장
-        </button>
+
+      <div className="mt-8 space-y-6 border-t border-line pt-6">
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+          <label htmlFor="topicId" className="text-sm text-muted">
+            주제
+          </label>
+          <select
+            id="topicId"
+            name="topicId"
+            defaultValue=""
+            className="rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink"
+          >
+            <option value="">주제 없음</option>
+            {topics.map((t) => (
+              <option key={t.slug} value={t.slug}>
+                {t.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <fieldset className="flex flex-wrap items-center gap-x-6 gap-y-3">
+          <legend className="sr-only">공개 범위</legend>
+          <span aria-hidden className="text-sm text-muted">
+            공개
+          </span>
+          <div className="inline-flex rounded-lg border border-line p-1">
+            {visibilityOptions.map(({ value, label, Icon }) => (
+              <label
+                key={value}
+                className="inline-flex cursor-pointer items-center gap-1.5 rounded-md px-3 py-1.5 text-sm text-muted transition-colors has-[:checked]:bg-ink has-[:checked]:text-paper has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-accent"
+              >
+                <input
+                  type="radio"
+                  name="visibility"
+                  value={value}
+                  defaultChecked={value === "PRIVATE"}
+                  className="sr-only"
+                />
+                <Icon size={14} strokeWidth={1.75} aria-hidden />
+                {label}
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
+        <div className="flex justify-end">
+          <button
+            type="submit"
+            className="rounded-lg bg-accent px-6 py-3 font-medium text-accent-ink transition-opacity hover:opacity-90"
+          >
+            저장하기
+          </button>
+        </div>
       </div>
     </form>
   );

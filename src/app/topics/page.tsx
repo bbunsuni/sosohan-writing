@@ -4,20 +4,23 @@ import { topics } from "@/lib/sample-data";
 export default function TopicsPage() {
   return (
     <div>
-      <h1 className="mb-6 font-serif text-2xl font-bold text-ink">주제</h1>
-      <div className="grid gap-4 sm:grid-cols-2">
+      <h1 className="font-serif text-3xl font-bold text-ink">주제</h1>
+      <p className="mt-2 text-body">같은 주제로 쓴 이야기를 모아 읽어요.</p>
+      <ul className="mt-12 divide-y divide-line border-y border-line">
         {topics.map((t) => (
-          <Link
-            key={t.slug}
-            href={`/topics/${t.slug}`}
-            className="rounded-2xl border border-line bg-card p-5 hover:border-accent"
-          >
-            <h2 className="font-serif text-lg font-bold text-ink"># {t.name}</h2>
-            <p className="mt-1 text-sm text-muted">{t.description}</p>
-            <p className="mt-3 text-xs text-muted">이야기 {t.postCount}개</p>
-          </Link>
+          <li key={t.slug}>
+            <Link href={`/topics/${t.slug}`} className="group flex items-baseline gap-4 py-6">
+              <span className="flex-1">
+                <span className="block font-serif text-xl font-bold text-ink transition-colors group-hover:text-accent">
+                  {t.name}
+                </span>
+                <span className="mt-1 block text-sm text-body">{t.description}</span>
+              </span>
+              <span className="text-xs text-muted">이야기 {t.postCount}</span>
+            </Link>
+          </li>
         ))}
-      </div>
+      </ul>
     </div>
   );
 }
