@@ -12,7 +12,8 @@
     "db:seed": "prisma db seed",
     "db:studio": "prisma studio",
     "typecheck": "next typegen && tsc --noEmit",
-    "db:seed:demo": "tsx prisma/seed.ts --demo"
+    "db:seed:demo": "tsx prisma/seed.ts --demo",
+    "vercel-build": "prisma migrate deploy && next build"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.3",

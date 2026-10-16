@@ -48,6 +48,7 @@
 │   ├── generated/prisma/    # prisma generate 결과물 (git 제외)
 │   └── auth.ts              # Auth.js 설정
 ├── docs/DESIGN.md           # 디자인 방향·토큰 (화면 작업 전 확인)
+├── docs/DEPLOY.md           # 배포 가이드 (Vercel + Neon)
 ├── docker-compose.yml       # 로컬 PostgreSQL
 └── .env.example
 ```
@@ -98,6 +99,6 @@ npm run dev                # http://localhost:3000
 
 ## 다음 할 일
 
-- 운영 배포(Vercel + 관리형 Postgres)와 OAuth 키 발급
+- 운영 배포 — [docs/DEPLOY.md](docs/DEPLOY.md) 참고
 - 목록 페이지네이션, 주제 추가/관리 방식 결정
 - 자동화된 E2E 테스트(Playwright)를 저장소에 추가
