@@ -4,7 +4,7 @@
 
 1. https://vercel.com/new 에서 GitHub의 `sosohan-writing` 리포를 **Import** 합니다.
 2. Framework는 Next.js로 자동 인식됩니다. 빌드 설정은 그대로 둡니다.
-   - `package.json`의 `vercel-build` 스크립트가 **DB 마이그레이션 → 빌드**를 자동으로 실행합니다.
+   - `package.json`의 `vercel-build` 스크립트가 **DB 마이그레이션 → 기본 주제 넣기 → 빌드**를 자동으로 실행합니다.
 
 ## 2. 데이터베이스 연결
 
@@ -30,14 +30,6 @@
 - 카카오: `https://sosohan-writing.vercel.app/api/auth/callback/kakao`
   (카카오 로그인 활성화, 동의항목에서 닉네임·프로필 사진 설정)
 
-## 4. 배포 후 기본 주제 넣기
-
-로컬에서 운영 DB 주소로 한 번만 실행합니다.
-
-```bash
-DATABASE_URL="<Neon 연결 문자열>" npm run db:seed
-```
-
-## 5. 이후 배포
+## 4. 이후 배포
 
 `main` 브랜치에 푸쉬하면 Vercel이 자동으로 다시 배포합니다.
